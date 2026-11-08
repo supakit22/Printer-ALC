@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ปริ้นป้ายโปรโมชั่น</title>
+<style>
+:root{--red:#d6001c;--red-d:#a30015;--red-l:#fff0f1;--ink:#231f20;--mute:#6f6a6b;--line:#e6dfe0;--bg:#f6f3f3;--ok:#14803c;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Prompt","Sarabun","Tahoma",sans-serif;font-size:16px}
+header{background:var(--red);color:#fff;border-bottom:5px solid var(--red-d)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:68px;flex-wrap:wrap}
+h1{margin:0;font-size:1.5rem;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--ink);border-radius:999px;padding:6px 14px;font-size:.9rem}
+.dot{width:10px;height:10px;border-radius:50%;background:#aaa}
+.dot.on{background:var(--ok)}.dot.off{background:var(--red)}
+main{display:grid;grid-template-columns:1fr 340px;gap:20px;padding:20px 16px 40px;align-items:start}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px}
+h2{margin:0 0 12px;font-size:1.05rem}
+#drop{border:2px dashed var(--red);background:var(--red-l);border-radius:6px;padding:28px 12px;text-align:center;cursor:pointer}
+#drop.over{background:#ffd9dd}
+#drop b{display:block;font-size:1.15rem;color:var(--red-d)}
+#drop span{color:var(--mute);font-size:.9rem}
+#thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}
+.th{position:relative;aspect-ratio:1;background:#eee;border-radius:4px;overflow:hidden}
+.th img{width:100%;height:100%;object-fit:cover}
+.th button{position:absolute;top:4px;right:4px;width:26px;height:26px;border:0;border-radius:50%;background:var(--red);color:#fff;font-size:16px;cursor:pointer;line-height:1}
+.th i{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.65);color:#fff;font-style:normal;font-size:.75rem;padding:1px 7px;border-radius:9px}
+.opt{margin-bottom:18px}
+.opt>label{display:block;font-weight:600;margin-bottom:8px}
+.layouts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.layouts input,.seg input{position:absolute;opacity:0}
+.lay{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 2px;border:2px solid var(--line);border-radius:5px;cursor:pointer;font-size:.85rem}
+.sheet{width:30px;height:40px;background:#fff;border:1px solid #bbb;padding:2px;display:grid;gap:2px}
+.sheet s{background:#c9bfc0;display:block}
+input:checked+.lay{border-color:var(--red);background:var(--red-l);font-weight:700}
+input:focus-visible+.lay,input:focus-visible+span{outline:3px solid #222;outline-offset:2px}
+select{width:100%;padding:10px;border:1px solid var(--line);border-radius:5px;font:inherit;background:#fff}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg span{display:block;text-align:center;padding:10px;border:2px solid var(--line);border-radius:5px;cursor:pointer}
+.seg input:checked+span{border-color:var(--red);background:var(--red);color:#fff;font-weight:700}
+.step{display:flex;align-items:center;gap:10px}
+.step button{width:40px;height:40px;border:2px solid var(--red);background:#fff;color:var(--red);font-size:22px;border-radius:5px;cursor:pointer}
+.step output{min-width:36px;text-align:center;font-size:1.3rem;font-weight:700}
+.sum{background:var(--red-l);border-radius:5px;padding:10px 12px;margin-bottom:12px;font-size:.95rem}
+#go{width:100%;padding:16px;border:0;border-radius:5px;background:var(--red);color:#fff;font:inherit;font-size:1.2rem;font-weight:700;cursor:pointer;border-bottom:4px solid var(--red-d)}
+#go:disabled{background:#b9b2b3;border-color:#999;cursor:not-allowed}
+#msg{margin-top:10px;font-size:.95rem;min-height:1.3em}
+.sticky{position:sticky;top:12px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.st{font-weight:700}.st.done{color:var(--ok)}.st.error{color:var(--red)}.st.printing,.st.queued{color:var(--warn)}
+.gate{position:fixed;inset:0;background:rgba(35,31,32,.88);display:flex;align-items:center;justify-content:center;z-index:9;padding:16px}
+.gate[hidden]{display:none}
+.gate form{background:#fff;border-radius:6px;border-top:6px solid var(--red);padding:24px;width:100%;max-width:320px}
+.gate input{width:100%;padding:12px;font:inherit;font-size:1.4rem;text-align:center;letter-spacing:.3em;border:2px solid var(--line);border-radius:5px;margin:12px 0}
+.gate button{width:100%;padding:12px;border:0;border-radius:5px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:1.05rem}
+#gmsg{color:var(--red);min-height:1.3em;font-size:.9rem}
+.fits label{display:block;margin-bottom:6px}
+.fits input{position:absolute;opacity:0}
+.fits span{display:block;padding:9px 12px;border:2px solid var(--line);border-radius:5px;cursor:pointer;font-size:.92rem}
+.fits small{display:block;color:var(--mute);font-size:.8rem}
+.fits input:checked+span{border-color:var(--red);background:var(--red-l)}
+.fits input:focus-visible+span{outline:3px solid #222;outline-offset:2px}
+#prev{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 10px}
+.pg{flex:none;height:230px;background:#fff;border:1px solid #999;box-shadow:0 2px 6px rgba(0,0,0,.18);display:grid;scroll-snap-align:center}
+.cell{position:relative;overflow:hidden;outline:1px dashed #cbbfc1;background:#fff}
+.cell img{width:100%;height:100%;display:block}
+.cell.pdf{display:flex;align-items:center;justify-content:center;background:#eee;font-weight:700;color:var(--mute)}
+.th.pdf{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--red-d);background:var(--red-l)}
+.empty{color:var(--mute);padding:8px 0}
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden><form id="gform">
+  <b>ใส่ PIN ของแผนก</b>
+  <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN">
+  <div id="gmsg" role="alert"></div>
+  <button>เข้าใช้งาน</button>
+</form></div>
+<header><div class="wrap">
+  <h1>ปริ้นป้ายโปรโมชั่น</h1>
+  <div class="chip"><span class="dot" id="dot"></span><span id="stxt">กำลังตรวจสอบ...</span></div>
+</div></header>
+
+<main>
+  <div>
+    <section class="card">
+      <h2>1. แนบไฟล์ป้าย</h2>
+      <div id="drop" tabindex="0" role="button">
+        <b>กดเพื่อเลือกรูป หรือลากรูปมาวางที่นี่</b>
+        <span>JPG, PNG, PDF เลือกได้หลายไฟล์ เพิ่มทีหลังได้</span>
+      </div>
+      <input type="file" id="file" accept="image/*,application/pdf" multiple hidden>
+      <div id="thumbs"></div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <h2>3. ตัวอย่างก่อนปริ้น</h2>
+      <div id="prev"><div class="empty">ยังไม่มีไฟล์ แนบรูปด้านบนก่อน</div></div>
+      <div class="empty" style="font-size:.85rem">ปัดซ้าย-ขวาเพื่อดูแต่ละแผ่น เส้นประคือรอยตัด</div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <h2>สถานะการพิมพ์</h2>
+      <div id="jobs"><div class="empty">ยังไม่มีงานพิมพ์</div></div>
+      <div class="empty" id="pinfo" style="font-size:.85rem"></div>
+    </section>
+  </div>
+
+  <aside class="card sticky">
+    <h2>2. ตั้งค่าการพิมพ์</h2>
+
+    <div class="opt"><label>ขนาดป้าย</label>
+      <div class="layouts" id="layouts" style="grid-template-columns:repeat(4,1fr)"></div></div>
+
+    <div class="opt"><label>การจัดวาง</label>
+      <div class="fits">
+        <label><input type="radio" name="fit" value="contain" checked><span>พอดีแผ่น<small>สัดส่วนเดิม อาจมีขอบขาว</small></span></label>
+        <label><input type="radio" name="fit" value="stretch"><span>ยืดเต็มแผ่น<small>เห็นครบทุกส่วน แต่ภาพอาจยืด</small></span></label>
+        <label><input type="radio" name="fit" value="cover"><span>ตัดขอบเต็มแผ่น<small>ขอบภาพหายนิดหน่อย</small></span></label>
+      </div>
+      <small style="color:var(--mute)">แนวกระดาษ (ตั้ง/นอน) เลือกให้อัตโนมัติตามรูป</small></div>
+
+    <div class="opt"><label>สี</label>
+      <div class="seg">
+        <label><input type="radio" name="color" value="color" checked><span>สี</span></label>
+        <label><input type="radio" name="color" value="bw"><span>ขาวดำ</span></label>
+      </div></div>
+
+    <div class="opt"><label>จำนวนชุด</label>
+      <div class="step"><button type="button" id="minus" aria-label="ลด">−</button>
+        <output id="copies">1</output><button type="button" id="plus" aria-label="เพิ่ม">+</button></div></div>
+
+    <div class="sum" id="sum">ยังไม่ได้เลือกรูป</div>
+    <button id="go" disabled>สั่งพิมพ์</button>
+    <div id="msg" role="status"></div>
+  </aside>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const PRESET = {
+  A6: { sheet: [595.28, 841.89], per: 4, lw: 'land', sub: '4 ป้าย/A4' },
+  A5: { sheet: [595.28, 841.89], per: 2, lw: 'port', sub: '2 ป้าย/A4' },
+  A4: { sheet: [595.28, 841.89], per: 1, lw: 'land', sub: 'มาตรฐาน' },
+  A3: { sheet: [841.89, 1190.55], per: 1, lw: 'land', sub: 'ใหญ่' },
+};
+let items = [], copies = 1;
+let pin = ''; try { pin = localStorage.getItem('pin') || ''; } catch {}
+const H = () => ({ 'x-pin': pin });
+function showGate(m) { $('#gate').hidden = false; $('#gmsg').textContent = m || ''; $('#pin').value = ''; $('#pin').focus(); }
+$('#gform').onsubmit = (e) => {
+  e.preventDefault(); pin = $('#pin').value.trim();
+  try { localStorage.setItem('pin', pin); } catch {}
+  $('#gate').hidden = true; poll();
+};
+
+// ปุ่มเลือกขนาดป้าย (ไอคอนแสดงจำนวนป้ายต่อแผ่น)
+const ICON = { A6: [2,2], A5: [1,2], A4: [1,1], A3: [1,1] };
+$('#layouts').innerHTML = Object.keys(PRESET).map((k, i) => {
+  const [c, r] = ICON[k];
+  return `<label><input type="radio" name="paper" value="${k}" ${k==='A4'?'checked':''}>
+    <div class="lay"><div class="sheet" style="grid-template-columns:repeat(${c},1fr);grid-template-rows:repeat(${r},1fr)">${'<s></s>'.repeat(c*r)}</div><b>${k}</b><small style="color:var(--mute)">${PRESET[k].sub}</small></div></label>`;
+}).join('');
+
+const paper = () => document.querySelector('[name=paper]:checked').value;
+const fit = () => document.querySelector('[name=fit]:checked').value;
+const colorMode = () => document.querySelector('[name=color]:checked').value;
+
+// กติกาเดียวกับฝั่ง server: เลือกแนวกระดาษตามรูปส่วนใหญ่
+function sheetInfo(p, group) {
+  const P = PRESET[p];
+  const land = group.filter(g => g.w > g.h).length;
+  const imgLand = land >= group.length - land;
+  const landscape = P.lw === 'land' ? imgLand : !imgLand;
+  const [w, h] = P.sheet, [pw, ph] = landscape ? [h, w] : [w, h];
+  let cols = 1, rows = 1;
+  if (P.per === 4) { cols = 2; rows = 2; }
+  if (P.per === 2) { landscape ? cols = 2 : rows = 2; }
+  return { pw, ph, cols, rows };
+}
+
+function renderPreview() {
+  const box = $('#prev'), per = PRESET[paper()].per, f = fit();
+  if (!items.length) { box.innerHTML = '<div class="empty">ยังไม่มีไฟล์ แนบรูปด้านบนก่อน</div>'; return; }
+  const of = { stretch: 'fill', contain: 'contain', cover: 'cover' }[f];
+  let html = '';
+  for (let i = 0; i < items.length; i += per) {
+    const g = items.slice(i, i + per);
+    const { pw, ph, cols, rows } = sheetInfo(paper(), g);
+    html += `<div class="pg" style="aspect-ratio:${pw}/${ph};grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">` +
+      g.map(it => it.pdf ? '<div class="cell pdf">PDF</div>' : `<div class="cell"><img src="${it.url}" alt="" style="object-fit:${of}"></div>`).join('') + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function summary() {
+  const n = items.length;
+  $('#go').disabled = !n;
+  renderPreview();
+  if (!n) { $('#sum').textContent = 'ยังไม่ได้เลือกไฟล์'; return; }
+  const sheets = Math.ceil(n / PRESET[paper()].per);
+  $('#sum').textContent = `${n} ป้าย = ${sheets} แผ่น ${paper()==='A3'?'A3':'A4'} × ${copies} ชุด = ${sheets*copies} แผ่น (${colorMode()==='bw'?'ขาวดำ':'สี'})`;
+}
+
+function renderThumbs() {
+  $('#thumbs').innerHTML = '';
+  items.forEach((it, i) => {
+    const d = document.createElement('div'); d.className = 'th' + (it.pdf ? ' pdf' : '');
+    d.innerHTML = it.pdf ? `PDF<i>${i+1}</i>` : `<img src="${it.url}" alt=""><i>${i+1}</i>`;
+    const b = document.createElement('button'); b.textContent = '×'; b.setAttribute('aria-label','ลบไฟล์');
+    b.onclick = () => { if (it.url) URL.revokeObjectURL(it.url); items.splice(i,1); renderThumbs(); };
+    d.appendChild(b); $('#thumbs').appendChild(d);
+  });
+  summary();
+}
+
+async function prep(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 2800 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0,0,c.width,c.height);
+  g.drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.93));
+  return { blob, w: bmp.width, h: bmp.height, url: URL.createObjectURL(blob), name: file.name.replace(/\.\w+$/, '') + '.jpg' };
+}
+async function addFiles(list) {
+  $('#msg').textContent = 'กำลังเตรียมรูป...';
+  let bad = 0;
+  for (const f of list) {
+    try {
+      if (f.type === 'application/pdf') items.push({ pdf: true, blob: f, name: f.name, w: 595, h: 842 });
+      else items.push(await prep(f));
+    } catch { bad++; }
+  }
+  $('#msg').textContent = bad ? `เปิดไฟล์ไม่ได้ ${bad} ไฟล์ (ใช้ได้เฉพาะ JPG, PNG, WebP, PDF)` : '';
+  renderThumbs();
+}
+
+const drop = $('#drop');
+drop.onclick = () => $('#file').click();
+drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#file').click(); } };
+$('#file').onchange = (e) => { addFiles([...e.target.files]); e.target.value = ''; };
+drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); addFiles([...e.dataTransfer.files].filter(f => f.type.startsWith('image/') || f.type === 'application/pdf')); };
+
+$('#minus').onclick = () => { copies = Math.max(1, copies-1); $('#copies').textContent = copies; summary(); };
+$('#plus').onclick = () => { copies = Math.min(99, copies+1); $('#copies').textContent = copies; summary(); };
+document.querySelectorAll('[name=paper],[name=fit],[name=color]').forEach(el => el.onchange = summary);
+
+$('#go').onclick = async () => {
+  const fd = new FormData();
+  items.forEach(it => fd.append('images', it.blob, it.name));
+  fd.append('paper', paper()); fd.append('fit', fit());
+  fd.append('color', colorMode()); fd.append('copies', copies);
+  $('#go').disabled = true; $('#msg').textContent = 'กำลังส่งงาน...';
+  try {
+    const r = await fetch('/api/print', { method: 'POST', headers: H(), body: fd });
+    const j = await r.json();
+    if (r.status === 401) { showGate(j.error); throw new Error(j.error); }
+    if (!r.ok) throw new Error(j.error || 'ส่งไม่สำเร็จ');
+    $('#msg').textContent = `ส่งงานพิมพ์ #${j.id} แล้ว ดูสถานะด้านล่าง`;
+    items.forEach(it => it.url && URL.revokeObjectURL(it.url)); items = []; renderThumbs();
+    poll();
+  } catch (e) { $('#msg').textContent = 'ผิดพลาด: ' + e.message; $('#go').disabled = !items.length; }
+};
+
+const LABEL = { queued:'รอคิว', printing:'กำลังพิมพ์', done:'พิมพ์แล้ว', error:'ผิดพลาด' };
+async function poll() {
+  if (!$('#gate').hidden) return;
+  if (!pin) return showGate();
+  try {
+    const r = await fetch('/api/status', { headers: H() });
+    if (r.status === 401 || r.status === 429) { const e = await r.json(); if (r.status === 401) pin = ''; return showGate(e.error); }
+    const s = await r.json();
+    $('#dot').className = 'dot ' + (s.printerReachable ? 'on' : 'off');
+    $('#stxt').textContent = s.printerReachable ? `เครื่องพิมพ์ ${s.printerIP} พร้อม` : `ติดต่อเครื่องพิมพ์ ${s.printerIP} ไม่ได้`;
+    $('#pinfo').textContent = 'เครื่องที่ใช้: ' + s.printerName;
+    $('#jobs').innerHTML = s.jobs.length ? '<table><tr><th>งาน</th><th>รายละเอียด</th><th>สถานะ</th></tr>' + s.jobs.map(j =>
+      `<tr><td>#${j.id}</td><td>${j.images} ป้าย ${j.paper}, ${j.pages} แผ่น, ${j.color?'สี':'ขาวดำ'}, ${j.copies} ชุด</td>
+      <td><span class="st ${j.status}">${LABEL[j.status]}</span>${j.error?'<br><small>'+j.error+'</small>':''}</td></tr>`).join('') + '</table>'
+      : '<div class="empty">ยังไม่มีงานพิมพ์</div>';
+  } catch {
+    $('#dot').className = 'dot off'; $('#stxt').textContent = 'ติดต่อ server ไม่ได้';
+  }
+}
+poll(); setInterval(poll, 3000); summary();
+</script>
+</body>
+</html>
